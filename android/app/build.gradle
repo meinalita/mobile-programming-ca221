@@ -21,7 +21,7 @@ android {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.0' // Ganti dengan versi terbaru
+        classpath 'com.android.tools.build:gradle:4.0.0' // Ganti dengan versi terbaru
     }
     }
 
