@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tugas_pertemuan02/widgets/post_item.dart';
+import '../widgets/post_item.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

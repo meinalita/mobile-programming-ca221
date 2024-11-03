@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tugas_pertemuan02/pages/home_page.dart';
-import 'package:tugas_pertemuan02/resources/colors.dart';
+import 'home_page.dart';
+import '../resources/colors.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});

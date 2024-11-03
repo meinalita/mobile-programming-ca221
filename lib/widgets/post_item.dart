@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tugas_pertemuan02/resources/dimentions.dart';
-import 'package:tugas_pertemuan02/widgets/post_action.dart';
-import 'package:tugas_pertemuan02/widgets/post_title.dart';
+import '../resources/dimentions.dart';
+import 'post_action.dart';
+import 'post_title.dart';
 
 class PostItem extends StatelessWidget {
   const PostItem({super.key});
