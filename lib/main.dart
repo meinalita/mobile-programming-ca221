@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tugas_pertemuan02/pages/main_page.dart';
 import 'package:tugas_pertemuan02/resources/colors.dart';
-import 'package:tugas_pertemuan02/resources/strings.dart';
+import 'package:tugas_pertemuan02/resources/string.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
         useMaterial3: true,
       ),
-      home: const MainPage(),
+      home: MainPage()
     );
   }
 }

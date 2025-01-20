@@ -1,15 +1,32 @@
 import 'package:flutter/material.dart';
-import '../widgets/post_item.dart';
+import 'package:tugas_pertemuan02/models/moment.dart';
+import 'package:tugas_pertemuan02/widgets/post_items.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  const HomePage({
+    super.key,
+    required this.moments,
+    required this.onUpdate,
+    required this.onDelete,
+  });
+
+  final Function(String id) onUpdate;
+  final Function(String id) onDelete;
+  final List<Moment> moments;
 
   @override
   Widget build(BuildContext context) {
-    final items = List.generate(30, (index) => const PostItem());
     return SingleChildScrollView(
       child: Column(
-        children: items,
+        children: moments
+            .map(
+              (momentItem) => PostItems(
+                moment: momentItem,
+                onDelete: onDelete,
+                onUpdate: onUpdate,
+              ),
+            )
+            .toList(),
       ),
     );
   }

@@ -1,7 +1,17 @@
+import 'package:faker/faker.dart' as faker;
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'home_page.dart';
-import '../resources/colors.dart';
+import 'package:tugas_pertemuan02/pages/home_page.dart';
+import 'package:tugas_pertemuan02/pages/moment_create_page.dart';
+import 'package:tugas_pertemuan02/pages/search_page.dart';
+import 'package:tugas_pertemuan02/resources/colors.dart';
+
+
+import 'package:nanoid2/nanoid2.dart';
+
+import '../models/moment.dart';
+
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -14,32 +24,151 @@ class _MainPageState extends State<MainPage> {
   // Variabel untuk menyimpan index halaman yang aktif
   int _seletedPageIndex = 0;
 
+  final _faker = faker.Faker();
+  // List Moments
+  List<Moment> _moments = [];
+
   // Fungsi untuk mengubah index halaman yang aktif
   void _onPageChanged(int index) {
-    setState(() {
-      _seletedPageIndex = index;
-    });
+    if (index == 2) {
+      // Jika index halaman adalah 2, maka navigasi ke halaman create moment
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+        return MomentCreatePage(onSaved: _saveMoment);
+      }));
+    } else {
+      // Jika index halaman bukan 2, maka navigasi ke halaman yang sesuai
+      setState(() {
+        _seletedPageIndex = index;
+      });
+    }
   }
 
-  // List halaman yang tersedia
-  final List<Widget> _pages = [
-    const HomePage(),
-    const Center(
-      child: Text('Search'),
-    ),
-    const Center(
-      child: Text('Create Moment'),
-    ),
-    const Center(
-      child: Text('Activity'),
-    ),
-    const Center(
-      child: Text('Profile'),
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _moments = List.generate(
+      2,
+      (index) => Moment(
+        id: nanoid(),
+        momentDate: _faker.date.dateTime(),
+        creator: _faker.person.name(),
+        location: _faker.address.city(),
+        imageUrl: 'https://picsum.photos/800/600?random=$index',
+        caption: _faker.lorem.sentence(),
+        likeCount: faker.random.integer(1000),
+        commentCount: faker.random.integer(100),
+        bookmarkCount: faker.random.integer(10),
+      ),
+    );
+  }
+
+  void _saveMoment(Moment newMoment) {
+    final existingMoment = getMomentById(newMoment.id);
+    if (existingMoment == null) {
+      setState(() {
+        _moments.add(newMoment);
+      });
+    } else {
+      setState(() {
+        _moments[_moments.indexOf(existingMoment)] = newMoment;
+      });
+    }
+  }
+
+  void onUpdate(String momentId) {
+    final selectedMoment = getMomentById(momentId);
+    if (selectedMoment != null) {
+      // Menampilkan dialog konfirmasi pembaruan data moment
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Update Moment'),
+            content: const Text('Are you sure you want to update this moment?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) {
+                    return MomentCreatePage(
+                      onSaved: _saveMoment,
+                      selectedMoment: selectedMoment,
+                    );
+                  }));
+                },
+                child: const Text('Sure'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void onDelete(String momentId) {
+    final selectedMoment = getMomentById(momentId);
+    if (selectedMoment != null) {
+      // Menampilkan dialog konfirmasi penghapusan moment
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Delete Moment'),
+            content: const Text('Are you sure you want to delete this moment?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _moments.remove(selectedMoment);
+                  });
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Sure'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Moment? getMomentById(String momentId) {
+    return _moments.firstWhereOrNull((moment) => moment.id == momentId);
+  }
 
   @override
   Widget build(BuildContext context) {
+    // List halaman yang tersedia
+    final List<Widget> pages = [
+      HomePage(
+        moments: _moments,
+        onUpdate: onUpdate,
+        onDelete: onDelete,
+      ),
+      SearchPage(moments: _moments),
+      const Center(
+        child: Text('Create Moment'),
+      ),
+      const Center(
+        child: Text('Activity'),
+      ),
+      const Center(
+        child: Text('Profile'),
+      ),
+    ];
     return Scaffold(
       appBar: AppBar(
         title: Image.asset(
@@ -48,7 +177,7 @@ class _MainPageState extends State<MainPage> {
         ),
         centerTitle: true,
       ),
-      body: _pages[_seletedPageIndex],
+      body: pages[_seletedPageIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
@@ -101,6 +230,9 @@ class _MainPageState extends State<MainPage> {
         unselectedItemColor: secondaryColor,
         onTap: _onPageChanged,
         currentIndex: _seletedPageIndex,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

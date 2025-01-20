@@ -1,18 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_pertemuan02/resources/colors.dart';
+
+
+import '../models/moment.dart';
 
 class PostTitle extends StatelessWidget {
-  const PostTitle({super.key});
+  const PostTitle({
+    super.key,
+    required this.moment,
+    required this.onDelete,
+    required this.onUpdate,
+  });
+  final Moment moment;
+  final Function(String id) onDelete;
+  final Function(String id) onUpdate;
 
   @override
   Widget build(BuildContext context) {
-    return const ListTile(
+    return ListTile(
       title: Text(
-        'Jepriana',
-        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70),
+        moment.creator,
+        style:
+            const TextStyle(fontWeight: FontWeight.bold, color: Colors.white70),
       ),
-      subtitle: Text('Denpasar, Bali', style: TextStyle(color: Colors.white54)),
-      leading: CircleAvatar(
+      subtitle:
+          Text(moment.location, style: const TextStyle(color: Colors.white54)),
+      leading: const CircleAvatar(
         backgroundImage: NetworkImage('https://i.pravatar.cc/150'),
+      ),
+      trailing: PopupMenuButton<String>(
+        onSelected: (value) {
+          if (value == 'Edit') {
+            onUpdate(moment.id);
+          } else if (value == 'Delete') {
+            onDelete(moment.id);
+          }
+        },
+        itemBuilder: (context) => [
+          const PopupMenuItem(
+            value: 'Edit',
+            child: Text('Edit'),
+          ),
+          const PopupMenuItem(
+            value: 'Delete',
+            child: Text('Delete'),
+          ),
+        ],
+        child: CircleAvatar(
+          backgroundColor: Colors.white.withOpacity(0.5),
+          child: const Icon(
+            Icons.more_vert,
+            color: primaryColor,
+          ),
+        ),
       ),
     );
   }
